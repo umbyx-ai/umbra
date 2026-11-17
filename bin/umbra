@@ -1,0 +1,14 @@
+#!/bin/sh
+# Lanzador de Umbra para Git Bash en Windows (en Linux y macOS, install.py crea ~/.local/bin/umbra).
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && { pwd -W 2>/dev/null || pwd; })
+: "${UMBRA_CASES_DIR:=$ROOT/cases}"
+export UMBRA_CASES_DIR
+if [ -x "$ROOT/.venv/Scripts/python.exe" ]; then
+    PY="$ROOT/.venv/Scripts/python.exe"
+elif [ -x "$ROOT/.venv/bin/python" ]; then
+    PY="$ROOT/.venv/bin/python"
+else
+    echo "[x] Umbra no está instalado todavía. Ejecuta install.bat (Windows) o install.sh en $ROOT." >&2
+    exit 1
+fi
+exec "$PY" -m umbra "$@"

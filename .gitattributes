@@ -1,6 +1,12 @@
 # Finales de línea normalizados (LF en el repositorio, nativos al hacer checkout)
 * text=auto
 
+# Los .bat/.cmd necesitan CRLF y los scripts de shell LF, sea cual sea el sistema
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.sh text eol=lf
+bin/umbra text eol=lf
+
 *.png binary
 *.jpg binary
 *.ico binary

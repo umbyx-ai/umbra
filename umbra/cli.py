@@ -115,10 +115,18 @@ def _depth(value: str) -> int:
     return n
 
 
+def resolve_cases_dir(args: argparse.Namespace) -> Path:
+    """--cases-dir > variable UMBRA_CASES_DIR (la pone el lanzador) > ./cases."""
+    return Path(getattr(args, "cases_dir", None) or os.environ.get("UMBRA_CASES_DIR") or "cases")
+
+
 def build_parser() -> argparse.ArgumentParser:
+    # SUPPRESS: si no se escriben, los subcomandos no pisan lo que se puso antes del subcomando
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("-v", "--verbose", action="count", default=0, help="más detalle (-vv para depurar)")
-    common.add_argument("--cases-dir", default="cases", help="carpeta de los casos (por defecto ./cases)")
+    common.add_argument("-v", "--verbose", action="count", default=argparse.SUPPRESS,
+                        help="más detalle (-vv para depurar)")
+    common.add_argument("--cases-dir", default=argparse.SUPPRESS,
+                        help="carpeta de los casos (por defecto UMBRA_CASES_DIR o ./cases)")
 
     parser = argparse.ArgumentParser(prog="umbra", parents=[common],
                                      description="Umbra · navaja suiza OSINT. Sin argumentos abre el menú.")
@@ -162,11 +170,12 @@ def main(argv: list[str] | None = None) -> int:
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
     args = build_parser().parse_args(argv)
+    args.verbose = getattr(args, "verbose", 0)
+    args.cases_dir = str(resolve_cases_dir(args))
     _setup_logging(args.verbose)
-    if args.cases_dir != "cases":
-        import umbra.case
+    import umbra.case
 
-        umbra.case.DEFAULT_CASES_DIR = Path(args.cases_dir)
+    umbra.case.DEFAULT_CASES_DIR = Path(args.cases_dir)
     try:
         return args.func(args)
     except CliError as exc:
