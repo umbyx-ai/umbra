@@ -1,0 +1,15 @@
+# Casos de investigación (pueden contener datos personales: no se suben nunca)
+cases/
+*.db
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# Secretos
+.env
